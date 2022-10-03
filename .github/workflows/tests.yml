@@ -9,8 +9,8 @@ env:
   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
-  tests:    
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+  Tests:    
+    name: Tests
     runs-on: ubuntu-latest
     container:
       image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
@@ -44,10 +44,7 @@ jobs:
       id: composer-cache
       run: |
         # echo "::set-output name=dir::$(composer config cache-files-dir)"
-        echo "action_state=yellow" >> $GITHUB_ENV
-        ls
-        # echo ${{ steps.composer-cache.outputs.dir }}
-        echo "${{ env.action_state }}"
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
 
     - uses: actions/cache@v3
       with:
