@@ -13,7 +13,11 @@ jobs:
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     runs-on: ubuntu-latest
     # runs-on: ${{ matrix.operating-system }}
-    container: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0 -u gitlab-imagenes -p
+    container:
+      image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
+      credentials:
+            username: gitlab-imagenes
+            password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
     strategy:
       fail-fast: false
       # matrix:
