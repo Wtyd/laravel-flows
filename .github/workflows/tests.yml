@@ -12,7 +12,6 @@ jobs:
   tests:    
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     runs-on: ubuntu-latest
-    # runs-on: ${{ matrix.operating-system }}
     container:
       image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
       credentials:
@@ -20,9 +19,6 @@ jobs:
             password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
     strategy:
       fail-fast: false
-      # matrix:
-      #   operating-system: [ubuntu-latest]
-      #   php-versions: ['8.1']
     services:
       postgres:
         image: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
@@ -42,83 +38,28 @@ jobs:
           --health-retries 5
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-
-    # - name: Install PHP
-    #   uses: shivammathur/setup-php@v2 
-    #   with:
-    #     php-version: ${{ matrix.php-versions }}
-    #     extensions: ${{ env.extensions }} #optional
-    #     # tools: phpcs, phpcbf, phpmd, phpstan:1.4
-    #     ini-values: "post_max_size=256M" #optional
-    #     coverage: none
+      uses: actions/checkout@v3
   
-    # - name: Get composer cache directory
-    #   id: composercache
-    #   run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+        
+    - uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
 
-    # - name: Cache dependencies
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: ${{ steps.composercache.outputs.dir }}
-    #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-    #     restore-keys: ${{ runner.os }}-composer-
-
-    # - name: Install dependencies
-    #   run: |
-    #     composer install --prefer-dist --no-progress
-    #     chmod -R +x tools/*
-
-    # - name: Install Global Parallel-Lint
-    #   run: composer global require php-parallel-lint/php-parallel-lint
-
-    # - name: Install Global Phpcpd for Php7.1
-    #   if: ${{ '7.1' == matrix.php-versions }}
-    #   run: cp tools/php71/phpcpd /usr/local/bin/phpcpd
-
-    # - name: Install Global Phpcpd for Php8.1
-    #   if: ${{ '8.1' == matrix.php-versions }}
-    #   run: cp tools/php80/phpcpd /usr/local/bin/phpcpd
-
-    # - name: Testing the Aplication
-    #   run: |
-    #     echo -e "\e[42m\e[30m**** Main Test Suite ****\033[0m"
-    #     vendor/bin/phpunit --order-by random
-    #     echo -e "\e[42m\e[30m**** GitfilesTest ****\033[0m"
-    #     vendor/bin/phpunit --group git
-    #   shell: bash
-
-    # - name: Copy .env
-    #   run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-    - name: Install Dependencies
+    - name: Composer Install
       run: php composer.phar install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-    - name: Directory Permissions
+    - name: Permisos en carpetas
       run: chmod -R 777 storage bootstrap/cache
-    
-    # - name: Start PostgreSQL on Ubuntu
-    #   run: |
-    #     sudo systemctl start postgresql.service
-    #     pg_isready
-    # - name: Create zataca user
-    #   run: |
-    #     sudo -u postgres psql --command="CREATE USER zataca PASSWORD 'zataca'" --command="\du"
-    # - name: Create timetable database
-    #   run: |
-    #     sudo -u postgres createdb --owner=zataca tests
-    #     PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
-
-    # - name: Configuracion Postgres
-    #   run: sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
   
-    - name: Migrations and Seeders
-      run: php artisan migrate --seed --env=testing -v
-      # env:
-      #     # The hostname used to communicate with the PostgreSQL service container
-      #     POSTGRES_HOST: postgres
-      #     # The default PostgreSQL port
-      #     POSTGRES_PORT: 5432
+    - name: Migraciones y Seeders
+      run: php artisan migrate --seed --env=testing
 
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
+    - name: Phpunit
       run: vendor/bin/phpunit
