@@ -1,6 +1,7 @@
 name: Tests
 # https://github.com/shivammathur/setup-php
 on:
+  push:
   pull_request:
     branches-ignore: [ main ]
 
