@@ -43,9 +43,11 @@ jobs:
     - name: Get Composer Cache Directory
       id: composer-cache
       run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
+        # echo "::set-output name=dir::$(composer config cache-files-dir)"
+        echo "action_state=yellow" >> $GITHUB_ENV
         ls
-        echo ${{ steps.composer-cache.outputs.dir }}
+        # echo ${{ steps.composer-cache.outputs.dir }}
+        echo "${{ env.action_state }}"
 
     - uses: actions/cache@v3
       with:
