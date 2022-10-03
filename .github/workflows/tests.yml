@@ -90,7 +90,10 @@ jobs:
     - name: Create timetable database
       run: |
         sudo -u postgres createdb --owner=zataca tests
-        PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
+        PGPASSWORD=zataca psql --username=zataca --host=postgres --list tests
+
+    - name: Migrations and Seeders
+      run: php artisan migrate --seed --env=testing
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
