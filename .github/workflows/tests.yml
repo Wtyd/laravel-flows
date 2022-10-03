@@ -12,8 +12,8 @@ jobs:
   tests:    
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     runs-on: ubuntu-latest
-    # runs-on: ${{ matrix.operating-system }}
-    container: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
+    runs-on: ${{ matrix.operating-system }}
+    # container: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0 -u gitlab-imagenes -p
     strategy:
       fail-fast: false
       # matrix:
@@ -26,6 +26,7 @@ jobs:
           POSTGRES_DB: tests
           POSTGRES_USER: zataca
           POSTGRES_PASSWORD: zataca
+          POSTGRES_HOST: 127.0.0.1 
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -38,14 +39,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # - name: Install PHP
-    #   uses: shivammathur/setup-php@v2 
-    #   with:
-    #     php-version: ${{ matrix.php-versions }}
-    #     extensions: ${{ env.extensions }} #optional
-    #     tools: phpcs, phpcbf, phpmd, phpstan:1.4
-    #     ini-values: "post_max_size=256M" #optional
-    #     coverage: none
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2 
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: ${{ env.extensions }} #optional
+        tools: phpcs, phpcbf, phpmd, phpstan:1.4
+        ini-values: "post_max_size=256M" #optional
+        coverage: none
   
     - name: Get composer cache directory
       id: composercache
@@ -103,13 +104,16 @@ jobs:
     #     sudo -u postgres createdb --owner=zataca tests
     #     PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
 
+    - name: Configuracion Postgres
+      run: echo "127.0.0.1 postgres" >> /etc/hosts
+  
     - name: Migrations and Seeders
       run: php artisan migrate --seed --env=testing -v
-      env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: postgres
-          # The default PostgreSQL port
-          POSTGRES_PORT: 5432
+      # env:
+      #     # The hostname used to communicate with the PostgreSQL service container
+      #     POSTGRES_HOST: postgres
+      #     # The default PostgreSQL port
+      #     POSTGRES_PORT: 5432
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
