@@ -1,0 +1,92 @@
+name: Tests
+# https://github.com/shivammathur/setup-php
+on:
+  pull_request:
+    branches-ignore: [ main ]
+
+env:
+  extensions: :opcache #intl, pcov #fileinfo is needed for Windows
+
+jobs:
+  tests:    
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['8.1']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2 
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: ${{ env.extensions }} #optional
+        tools: phpcs, phpcbf, phpmd, phpstan:1.4
+        ini-values: "post_max_size=256M" #optional
+        coverage: none
+  
+    # - name: Get composer cache directory
+    #   id: composercache
+    #   run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    # - name: Cache dependencies
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: ${{ steps.composercache.outputs.dir }}
+    #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+    #     restore-keys: ${{ runner.os }}-composer-
+
+    # - name: Install dependencies
+    #   run: |
+    #     composer install --prefer-dist --no-progress
+    #     chmod -R +x tools/*
+
+    # - name: Install Global Parallel-Lint
+    #   run: composer global require php-parallel-lint/php-parallel-lint
+
+    # - name: Install Global Phpcpd for Php7.1
+    #   if: ${{ '7.1' == matrix.php-versions }}
+    #   run: cp tools/php71/phpcpd /usr/local/bin/phpcpd
+
+    # - name: Install Global Phpcpd for Php8.1
+    #   if: ${{ '8.1' == matrix.php-versions }}
+    #   run: cp tools/php80/phpcpd /usr/local/bin/phpcpd
+
+    # - name: Testing the Aplication
+    #   run: |
+    #     echo -e "\e[42m\e[30m**** Main Test Suite ****\033[0m"
+    #     vendor/bin/phpunit --order-by random
+    #     echo -e "\e[42m\e[30m**** GitfilesTest ****\033[0m"
+    #     vendor/bin/phpunit --group git
+    #   shell: bash
+
+    # - name: Copy .env
+    #   run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+  
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+    
+    - name: Start PostgreSQL on Ubuntu
+      run: |
+        sudo systemctl start postgresql.service
+        pg_isready
+    - name: Create zataca user
+      run: |
+        sudo -u postgres psql --command="CREATE USER zataca PASSWORD 'zataca'" --command="\du"
+    - name: Create timetable database
+      run: |
+        sudo -u postgres createdb --owner=zataca tests
+        PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
+
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      run: vendor/bin/phpunit
