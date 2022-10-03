@@ -79,9 +79,6 @@ jobs:
         ls -lah storage
         echo "Establece permisos"
         chmod -R 777 storage bootstrap/cache
-  
-    - name: Generate key
-      run: php artisan key:generate
     
     - name: Start PostgreSQL on Ubuntu
       run: |
