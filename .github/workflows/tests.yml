@@ -30,16 +30,16 @@ jobs:
         ini-values: "post_max_size=256M" #optional
         coverage: none
   
-    # - name: Get composer cache directory
-    #   id: composercache
-    #   run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Get composer cache directory
+      id: composercache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-    # - name: Cache dependencies
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: ${{ steps.composercache.outputs.dir }}
-    #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-    #     restore-keys: ${{ runner.os }}-composer-
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composercache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
 
     # - name: Install dependencies
     #   run: |
@@ -72,7 +72,11 @@ jobs:
       run: php composer.phar install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
+      run: |
+        ls
+        ls -lah bootstrap
+        ls -lah storage
+        chmod -R 777 storage bootstrap/cache
   
     - name: Generate key
       run: php artisan key:generate
