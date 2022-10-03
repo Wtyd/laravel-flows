@@ -40,17 +40,18 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
   
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        # echo "::set-output name=dir::$(composer config cache-files-dir)"
-        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-        echo $?
+    # - name: Get Composer Cache Directory
+    #   id: composer-cache
+    #   run: |
+    #     # echo "::set-output name=dir::$(composer config cache-files-dir)"
+    #     echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
+    #     echo 'EOF' >> $GITHUB_ENV
+    #     echo $?
 
     - uses: actions/cache@v3
       with:
-        path: ${{ steps.composer-cache.outputs.dir }}
+        # path: ${{ steps.composer-cache.outputs.dir }}
+        path: /home/zataca/.cache/composer/files
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
