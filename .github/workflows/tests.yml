@@ -57,7 +57,7 @@ jobs:
           ${{ runner.os }}-composer-
 
     - name: Composer Install
-      run: php composer.phar install -q --no-ansi --no-interaction --no-scripts
+      run: php composer.phar install --no-ansi --no-interaction --no-scripts
 
     - name: Permisos en carpetas
       run: chmod -R 777 storage bootstrap/cache
