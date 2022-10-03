@@ -105,7 +105,7 @@ jobs:
     #     PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
 
     - name: Configuracion Postgres
-      run: echo "127.0.0.1 postgres" >> /etc/hosts
+      run: sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
   
     - name: Migrations and Seeders
       run: php artisan migrate --seed --env=testing -v
