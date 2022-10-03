@@ -1,0 +1,72 @@
+stages:
+  - validator
+  - tests
+  - deploy
+  - deploy_migration
+  - metrics_1
+  - metrics_2
+  - metrics_3
+  - post_metrics
+
+image: gitlab.zataca.es:5050/operaciones/contenedores/php80:0.0.3
+
+#Cache compartida a lo largo de todos los jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - vendor/
+  - informes/
+
+variables:
+  DB_DATABASE_TESTING: tests # Se usa en el job de Dusk
+  APP_ENV: testing
+  POSTGRES_DB: ${DB_DATABASE_TESTING}
+  POSTGRES_USER: zataca
+  POSTGRES_PASSWORD: zataca
+  POSTGRES_HOST_AUTH_METHOD: md5
+  PHP: 'php'
+  COMPOSER_INSTALL: ${PHP} composer.phar install --no-progress --no-interaction
+  TESTING_SEEDER: DatabaseSeeder
+  JOB_CYPRESS_TESTS: 'Anulo el job de cypress que se ejecutaria en el Merge Request'
+
+before_script:
+  - ${COMPOSER_INSTALL}
+
+include:
+  - project: 'operaciones/contenedores'
+    ref: '4.2.0'
+    file: 'pipeline/sencilla/full-jobs.yml'
+
+
+Tests:
+  services:
+    - name: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
+      alias: postgres
+  stage: tests
+  before_script:
+    - ${COMPOSER_INSTALL}
+    - ${PHP} artisan migrate ${MIGRATION_PATHS}
+    - ${PHP} artisan db:seed
+  script:
+    - ${PHP} vendor/bin/phpunit --exclude-group login # Esto es pq se hacen peticiones Http que no se pueden resolver
+  except: [schedules]
+  tags:
+    - docker
+
+
+#*************** BETA **************************************************************
+# deploy_beta:
+#   stage: deploy
+#   before_script: []
+#   environment:
+#     name: beta
+#     url: https://betaentorno.zataca.es/
+#   variables:
+#     ENVOY: /home/gitlab-runner/.composer/vendor/bin/envoy
+#   script:
+#     - ${ENVOY} run deploy --server='beta' --rama=${CI_COMMIT_REF_NAME} --commit=${CI_COMMIT_SHA}
+#   dependencies: []
+#   except: [schedules]
+#   only: [deploy]
+
+

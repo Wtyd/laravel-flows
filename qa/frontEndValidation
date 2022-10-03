@@ -1,0 +1,33 @@
+#!/bin/bash
+RED='\033[1;31m'
+GREEN_LIGHT='\033[1;32m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+
+echo -e "${GREEN}Comienza EsLint:${NC}"
+node_modules/.bin/eslint .eslintrc app-front
+eslint=$?
+
+# --check en lugar de --write pq no queremos modificar ficheros y si queremos exit code
+echo -e "${GREEN}Comienza Prettier:${NC}"
+node_modules/.bin/prettier --config .prettierrc --check "app-front/**/*.{js,vue,scss,css}"
+prettier=$?
+
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+NC='\033[0m' # No Color
+
+if [[ $eslint != 0 ]]; then
+    echo -e "${RED}La validación esLint ha fallado.${NC}"
+else
+    echo -e "${GREEN_LIGHT}La validación esLint ha pasado.${NC}"
+fi
+
+if [[ $prettier != 0 ]]; then
+    echo -e "${RED}La validación prettier ha fallado.${NC}"
+else
+    echo -e "${GREEN_LIGHT}La validación prettier ha pasado.${NC}"
+fi
+
+exit $eslint || $prettier

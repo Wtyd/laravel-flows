@@ -1,0 +1,26 @@
+# Phpqa copia este fichero de configuracion y lo ejecuta desde el directorio "build"
+# currentWorkingDirectory es donde se ejecuta phpstan, en este caso desde ./
+{
+    includes: [
+        %currentWorkingDirectory%/vendor/nunomaduro/larastan/extension.neon #Reglas LaraStan, wrapper de phpstan para Laravel
+    ]
+    parameters: {
+        reportUnmatchedIgnoredErrors: false
+        tmpDir: %currentWorkingDirectory%/tools/tmp
+        excludePaths: [
+            %currentWorkingDirectory%/app-front,
+            %currentWorkingDirectory%/qa,
+            %currentWorkingDirectory%/storage,
+            %currentWorkingDirectory%/public,
+            %currentWorkingDirectory%/tests
+        ]
+        ignoreErrors: [
+            '#Call to an undefined method Src\\Utils\\Foundation\\BaseEntity\\BaseEntity::[a-zA-Z\\_]+\(\)#', 
+            '#Call to an undefined method Faker\\Generator::[a-zA-Z\\_]+\(\)#', # Cualquier método añadido en el CustomFakerProvider va a dar error
+            '#Call to an undefined method Illuminate\\Database\\[a-zA-Z\\_:<>\|]+\(\)#' # Cualquier método definido en Illuminate\Database
+            # TODO resolver estas dos últimas
+            '#Argument of an invalid type object supplied for foreach, only iterables are supported.#' # ApiResponse 179 $response es object debería ser iterable
+            '#PHPDoc type string of property Src\\Usuario\\Infrastructure\\Persistence\\UserFactory::\$model is not covariant with PHPDoc type class-string<Illuminate\\Database\\Eloquent\\Model> of overridden property Illuminate\\Database\\Eloquent\\Factories\\Factory<Illuminate\\Database\\Eloquent\\Model>::\$model.#'
+        ]
+    }
+}

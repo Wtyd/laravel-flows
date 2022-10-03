@@ -1,0 +1,59 @@
+/** Me obligan */
+*,
+*:focus {
+  outline: none;
+}
+
+html,
+body,
+.app {
+  height: 100%;
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background: #f8f9fc;
+}
+
+.nice-scrollbar {
+  overflow: auto;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 9px;
+    background-color: #dfe6e9;
+    border-radius: 9px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #95a5a6;
+    border-radius: 9px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #dfe6e9;
+    opacity: 0;
+  }
+}
+
+/** v-tippy theme */
+.tippy-tooltip.app-theme {
+  background: #35425b;
+
+  .tippy-backdrop {
+    background: #35425b;
+  }
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-enter,
+.modal-leave-to {
+  transform: scale(0.5);
+  opacity: 0;
+}

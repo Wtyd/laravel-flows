@@ -1,0 +1,25 @@
+{
+    "recommendations": [
+		//Front-End
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"octref.vetur",
+
+		//Back-End
+		"ikappas.phpcs",
+		"persoderlind.vscode-phpcbf",
+		"ecodes.vscode-phpmd",
+		"bmewburn.vscode-intelephense-client",
+		"onecentlin.laravel5-snippets",
+		"austenc.laravel-docs",
+
+		//Otras
+		"ms-azuretools.vscode-docker",
+		"eamodio.gitlens",
+		"gruntfuggly.todo-tree",
+		"coenraads.bracket-pair-colorizer",
+		"irongeek.vscode-env",
+		"dotjoshjohnson.xml",
+		
+	]
+}

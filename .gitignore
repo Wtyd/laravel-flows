@@ -1,0 +1,49 @@
+
+# IDEs
+/.idea
+*.code-workspace
+
+# Front
+/public/hot
+/public/storage
+/public/build
+/public/dist
+/public/dist/**/*.*
+/public/mix-manifest.json
+
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+phpunit.dusk.xml
+
+.cache
+/public/docs
+/docker/logs/nginx
+.eslintcache
+/storage/app/public/dist
+!public/dist/.gitkeep
+
+/bootstrap/cache/*
+/storage/*.key
+/vendor
+/node_modules
+
+# Artefactos de los servidores
+.bash_history
+.config/
+.local/
+.nvm/
+.profile
+.ssh/
+.wget-hsts
+.yarnrc
+.viminfo
+
+#Ignorar los compilados de Envoy.blade.php
+Envoy*.php
+
+# Ignora la cache de phpstan. Donde se guarda la cache está definido en phpstan-phpqa.neon
+tools/tmp/*

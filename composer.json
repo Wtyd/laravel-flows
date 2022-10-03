@@ -1,0 +1,77 @@
+{
+    "name": "zataca/laravel-skeleton",
+    "description": "A Laravel-Vue SPA starter project template.",
+    "license": "proprietary",
+    "type": "project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://gitlab+deploy-token-5:N_qaykamx4T8niQrvEf4@gitlab.zataca.es/jers0/filterio.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab+deploy-token-19:VniyDTPZMhEf9MEcNVjy@gitlab.zataca.es/jonny/hydrator.git"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "fideloper/proxy": "^4.4",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "jers0/filterio": "^2.0.4",
+        "laravel/framework": "^8.12",
+        "laravel/horizon": "^5.0",
+        "laravel/sanctum": "^2.15",
+        "laravel/telescope": "^4.0",
+        "laravel/tinker": "^2.5",
+        "laravel/ui": "^3.4.1",
+        "pusher/pusher-php-server": "^4.1",
+        "spatie/laravel-permission": "^5.0",
+        "zataca/hydrator": "^1.1"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.13",
+        "mockery/mockery": "^1.4.2",
+        "nunomaduro/collision": "^5.0",
+        "nunomaduro/larastan": "^1.0",
+        "phpunit/phpunit": "^9.3.3",
+        "spatie/laravel-ignition": "^1.2",
+        "wtyd/githooks": "^2.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "discard-changes": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Src\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "migrate:testing": "php artisan migrate --env=testing && php artisan db:seed --env=testing",
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-package-install": [],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php artisan jwt:secret --force --ansi"
+        ]
+    }
+}

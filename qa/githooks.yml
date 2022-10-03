@@ -1,0 +1,56 @@
+Options:
+  execution: full
+
+Tools:
+  - phpstan
+  - security-checker
+  - parallel-lint
+  - phpcbf
+  - phpcs
+  - phpmd
+  - phpcpd
+
+#Se ejecuta contra la carpeta ./src. Si no existe da KO, por tanto comentarla en Tools.
+phpstan:
+  executablePath: vendor/bin/phpstan
+  paths: ['./src']
+  config: "./qa/phpstan-phpqa.neon"
+  #memory-limit: '1G' # Examples: 1M 2000M 1G 5G
+  level: 4 #level 0-8 (0 default, 8 max)
+  otherArguments: '--no-progress'
+
+#Se ejecuta contra la raiz del proyecto
+parallel-lint:
+  paths: ['./']
+  exclude: ['bootstrap/cache', vendor]
+
+phpcs:
+  executablePath: tools/phpcbf
+  paths: ['./']
+  standard: "./qa/rules/psr12-ruleset.xml"
+  error-severity: 1
+  warning-severity: 6
+
+phpcbf:
+  usePhpcsConfiguration: true
+
+phpmd:
+  executablePath: tools/phpmd
+  paths: ['./src']
+  rules: "./qa/rules/phpmd-src-ruleset.xml"
+
+phpcpd:
+  executablePath: tools/phpcpd
+  paths: ['./']
+  exclude:
+    - qa
+    - bootstrap
+    - database
+    - storage
+    - tests
+    - vendor
+    - tools/tmp/
+
+security-checker:
+  executablePath: tools/local-php-security-checker
+  ignoreErrorsOnExit: true
