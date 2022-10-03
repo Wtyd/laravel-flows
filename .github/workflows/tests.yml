@@ -73,9 +73,11 @@ jobs:
 
     - name: Directory Permissions
       run: |
-        ls
+        echo "Muestra contenido bootstrap\n"
         ls -lah bootstrap
+        echo "Muestra contenido storage\n"
         ls -lah storage
+        echo "Establece permisos"
         chmod -R 777 storage bootstrap/cache
   
     - name: Generate key
