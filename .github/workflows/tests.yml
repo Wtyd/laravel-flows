@@ -16,9 +16,9 @@ jobs:
     # container: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0 -u gitlab-imagenes -p
     strategy:
       fail-fast: false
-      # matrix:
-      #   operating-system: [ubuntu-latest]
-      #   php-versions: ['8.1']
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['8.1']
     services:
       postgres:
         image: postgres:latest
