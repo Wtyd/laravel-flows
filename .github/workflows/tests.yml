@@ -104,6 +104,11 @@ jobs:
 
     - name: Migrations and Seeders
       run: php artisan migrate --seed --env=testing
+      env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: postgres
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
