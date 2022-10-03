@@ -17,6 +17,20 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['8.1']
+    postgres:
+      image: postgres:latest
+      env:
+        POSTGRES_DB: tests
+        POSTGRES_USER: zataca
+        POSTGRES_PASSWORD: zataca
+      ports:
+        - 5432:5432
+      # Set health checks to wait until postgres has started
+      options:
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -72,25 +86,19 @@ jobs:
       run: php composer.phar install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Directory Permissions
-      run: |
-        echo "Muestra contenido bootstrap\n"
-        ls -lah bootstrap
-        echo "Muestra contenido storage\n"
-        ls -lah storage
-        echo "Establece permisos"
-        chmod -R 777 storage bootstrap/cache
+      run: chmod -R 777 storage bootstrap/cache
     
-    - name: Start PostgreSQL on Ubuntu
-      run: |
-        sudo systemctl start postgresql.service
-        pg_isready
-    - name: Create zataca user
-      run: |
-        sudo -u postgres psql --command="CREATE USER zataca PASSWORD 'zataca'" --command="\du"
-    - name: Create timetable database
-      run: |
-        sudo -u postgres createdb --owner=zataca tests
-        PGPASSWORD=zataca psql --username=zataca --host=postgres --list tests
+    # - name: Start PostgreSQL on Ubuntu
+    #   run: |
+    #     sudo systemctl start postgresql.service
+    #     pg_isready
+    # - name: Create zataca user
+    #   run: |
+    #     sudo -u postgres psql --command="CREATE USER zataca PASSWORD 'zataca'" --command="\du"
+    # - name: Create timetable database
+    #   run: |
+    #     sudo -u postgres createdb --owner=zataca tests
+    #     PGPASSWORD=zataca psql --username=zataca --host=localhost --list tests
 
     - name: Migrations and Seeders
       run: php artisan migrate --seed --env=testing
