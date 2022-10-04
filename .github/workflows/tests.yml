@@ -17,6 +17,8 @@ jobs:
       credentials:
             username: gitlab-imagenes
             password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
+      volumes:
+        - /tmp/composer:/home/zataca/.cache/composer/files
     strategy:
       fail-fast: false
     services:
@@ -51,8 +53,8 @@ jobs:
     - uses: actions/cache@v3
       with:
         # path: ${{ steps.composer-cache.outputs.dir }}
-        path: /home/zataca/.cache/composer/files
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        path: /tmp/composer
+        key: ${{ runner.os }}-composer-${{ hashFiles('micache') }}
         restore-keys: |
           ${{ runner.os }}-composer-
 
