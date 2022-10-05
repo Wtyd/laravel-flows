@@ -9,63 +9,76 @@ env:
   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
-  Tests:    
-    name: Tests
+  BackEnd:
+    name: PhpStan
     runs-on: ubuntu-latest
-    container:
-      image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
-      credentials:
-            username: gitlab-imagenes
-            password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
-      volumes:
-        - /tmp/composer:/home/zataca/.cache/composer/files
-    strategy:
-      fail-fast: false
-    services:
-      postgres:
-        image: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
-        credentials:
-            username: gitlab-imagenes
-            password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
-        env:
-          POSTGRES_DB: tests
-          POSTGRES_USER: zataca
-          POSTGRES_PASSWORD: zataca
-          POSTGRES_HOST_AUTH_METHOD: md5 
-        # Set health checks to wait until postgres has started
-        options:
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
-  
-    # - name: Get Composer Cache Directory
-    #   id: composer-cache
-    #   run: |
-    #     # echo "::set-output name=dir::$(composer config cache-files-dir)"
-    #     echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
-    #     echo 'EOF' >> $GITHUB_ENV
-    #     echo $?
+      uses: actions/checkout@v2
 
-    - uses: actions/cache@v3
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
       with:
-        # path: ${{ steps.composer-cache.outputs.dir }}
-        path: /tmp/composer
-        key: ${{ runner.os }}-composer-${{ hashFiles('micache') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
+        php-version: '8.1'
 
-    - name: Composer Install
-      run: php composer.phar install --no-ansi --no-interaction --no-scripts
+    - name: Get composer cache directory
+      id: composercache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-    - name: Permisos en carpetas
-      run: chmod -R 777 storage bootstrap/cache
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composercache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Execute PhpStan
+      run: php githooks tool all
+
+  # Tests:    
+  #   name: Tests
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
+  #     credentials:
+  #           username: gitlab-imagenes
+  #           password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
+  #     volumes:
+  #       - /tmp/composer:/home/zataca/.cache/composer/files
+  #   strategy:
+  #     fail-fast: false
+  #   services:
+  #     postgres:
+  #       image: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
+  #       credentials:
+  #           username: gitlab-imagenes
+  #           password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
+  #       env:
+  #         POSTGRES_DB: tests
+  #         POSTGRES_USER: zataca
+  #         POSTGRES_PASSWORD: zataca
+  #         POSTGRES_HOST_AUTH_METHOD: md5 
+  #       # Set health checks to wait until postgres has started
+  #       options:
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
+
+  #   - name: Composer Install
+  #     run: php composer.phar install --no-ansi --no-interaction --no-scripts
+
+  #   - name: Permisos en carpetas
+  #     run: chmod -R 777 storage bootstrap/cache
   
-    - name: Migraciones y Seeders
-      run: php artisan migrate --seed --env=testing
+  #   - name: Migraciones y Seeders
+  #     run: php artisan migrate --seed --env=testing
 
     # - name: Phpunit
     #   run: vendor/bin/phpunit
