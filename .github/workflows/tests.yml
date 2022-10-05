@@ -9,33 +9,46 @@ on:
 #   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
-  BackEnd:
-    name: BackEnd
+  FrontEnd:
+    name: FrontEnd
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
-        tools: parallel-lint
-        coverage: none
-
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          tools/tmp/resultCache.php
-        key: ${{ github.ref_name }}
-        restore-keys: main
-
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      run: yarn install --check-files
 
     - name: Execute GitHooks
-      run: php vendor/bin/githooks tool all --processes=4
+      run: qa/frontEndValidation
+
+  # BackEnd:
+  #   name: BackEnd
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Install PHP
+  #     uses: shivammathur/setup-php@v2
+  #     with:
+  #       php-version: '8.1'
+  #       tools: parallel-lint
+  #       coverage: none
+
+  #   - name: Cache de Phpstan
+  #     uses: actions/cache@v2
+  #     with:
+  #       path: |
+  #         tools/tmp/resultCache.php
+  #       key: ${{ github.ref_name }}
+  #       restore-keys: main
+
+  #   - name: Install dependencies
+  #     run: composer install --prefer-dist --no-progress
+
+  #   - name: Execute GitHooks
+  #     run: php vendor/bin/githooks tool all --processes=4 # Ejecución rápida (8 segs sin cache, 6 segs con cache, 3 con paralelización)
 
   # Tests:    
   #   name: Tests
