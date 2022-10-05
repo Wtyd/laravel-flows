@@ -18,10 +18,11 @@ jobs:
 
     - name: Install dependencies
 
-    - uses: actions/setup-node@v3
+    - name: Node 12
+      uses: actions/setup-node@v3
       with:
-        node-version: 16
-        
+        node-version: 12
+
     - name: Execute GitHooks
       run: yarn install --check-files
 
