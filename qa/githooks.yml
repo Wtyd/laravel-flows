@@ -22,7 +22,7 @@ phpstan:
 #Se ejecuta contra la raiz del proyecto
 parallel-lint:
   paths: ['./']
-  exclude: ['bootstrap/cache', vendor]
+  exclude: [bootstrap/cache, vendor, tools]
 
 phpcs:
   executablePath: tools/phpcbf

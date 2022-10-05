@@ -23,27 +23,19 @@ jobs:
         tools: parallel-lint
         coverage: none
 
-    - name: Get composer cache directory
-      id: composercache
-      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
     - name: Cache dependencies
       uses: actions/cache@v2
       with:
-        path: ${{ steps.composercache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-        restore-keys: ${{ runner.os }}-composer-
+        path: |
+          tools/tmp/resultCache.php
+        key: ${{ github.ref_name }}
+        restore-keys: main
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Execute Parallel-lint
-      run: |
-        parallel-lint --version
-        php vendor/bin/githooks tool parallel-lint
-
     - name: Execute GitHooks
-      run: php vendor/bin/githooks tool all
+      run: php vendor/bin/githooks tool all && echo "\n" && echo ${{ github.ref_name }}
 
   # Tests:    
   #   name: Tests
