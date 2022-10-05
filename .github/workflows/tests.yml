@@ -20,11 +20,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 12
+        cache: 'yarn'
 
     - name: Install dependencies
       run: yarn install --check-files
 
-    - name: Execute GitHooks
+    - name: Check Front-End
       run: qa/frontEndValidation
 
   # BackEnd:
