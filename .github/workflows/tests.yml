@@ -20,7 +20,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.1'
-        tools: parallel-Lint
+        tools: parallel-lint
         coverage: none
 
     - name: Get composer cache directory
@@ -38,7 +38,9 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Execute Parallel-lint
-      run: php vendor/bin/githooks tool parallel-lint
+      run: |
+        parallel-lint --version
+        php vendor/bin/githooks tool parallel-lint
 
     - name: Execute GitHooks
       run: php vendor/bin/githooks tool all
