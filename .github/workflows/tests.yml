@@ -37,7 +37,10 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Execute PhpStan
+    - name: Execute Parallel-lint
+      run: php vendor/bin/githooks tool parallel-lint
+
+    - name: Execute GitHooks
       run: php vendor/bin/githooks tool all
 
   # Tests:    
