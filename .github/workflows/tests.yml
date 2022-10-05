@@ -35,7 +35,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Execute GitHooks
-      run: php vendor/bin/githooks tool all && echo "\n" && echo ${{ github.ref_name }}
+      run: php vendor/bin/githooks tool all --processes=4
 
   # Tests:    
   #   name: Tests
