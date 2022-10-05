@@ -5,8 +5,8 @@ on:
   pull_request:
     branches-ignore: [ main ]
 
-env:
-  extensions: :opcache #intl, pcov #fileinfo is needed for Windows
+# env:
+#   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
   BackEnd:
