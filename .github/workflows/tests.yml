@@ -21,8 +21,9 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-    
-    - run: yarn install --check-files
+        
+    - name: Execute GitHooks
+      run: yarn install --check-files
 
     - name: Execute GitHooks
       run: qa/frontEndValidation
