@@ -9,53 +9,62 @@ on:
 #   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
-  FrontEnd:
-    name: FrontEnd
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Node 12
-      uses: actions/setup-node@v3
-      with:
-        node-version: 12
-        cache: 'yarn'
-
-    - name: Install dependencies
-      run: yarn install --check-files
-
-    - name: Check Front-End
-      run: qa/frontEndValidation
-
-
-  # BackEnd:
-  #   name: BackEnd
+  # FrontEnd:
+  #   name: FrontEnd
   #   runs-on: ubuntu-latest
   #   steps:
   #   - name: Checkout
   #     uses: actions/checkout@v2
 
-  #   - name: Install PHP
-  #     uses: shivammathur/setup-php@v2
+  #   - name: Node 12
+  #     uses: actions/setup-node@v3
   #     with:
-  #       php-version: '8.1'
-  #       tools: parallel-lint
-  #       coverage: none
-
-  #   - name: Cache de Phpstan
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: |
-  #         tools/tmp/resultCache.php
-  #       key: ${{ github.ref_name }}
-  #       restore-keys: main
+  #       node-version: 12
+  #       cache: 'yarn'
 
   #   - name: Install dependencies
-  #     run: composer install --prefer-dist --no-progress
+  #     run: yarn install --check-files
 
-  #   - name: Execute GitHooks
-  #     run: php vendor/bin/githooks tool all --processes=4 # Ejecución rápida (8 segs sin cache, 6 segs con cache, 3 con paralelización)
+  #   - name: Check Front-End
+  #     run: qa/frontEndValidation
+
+
+  BackEnd:
+    name: BackEnd
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        tools: parallel-lint
+        coverage: none
+
+    - name: Cache de Phpstan
+      uses: actions/cache@v2
+      with:
+        path: |
+          tools/tmp/resultCache.php
+        key: ${{ github.ref_name }}
+        restore-keys: main
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Execute GitHooks
+      run: php vendor/bin/githooks tool all --processes=4 # Ejecución rápida (8 segs sin cache, 6 segs con cache, 3 con paralelización)
+
+    - name: Composer Validator
+      run: php composer.phar validate --strict
+
+    - name: Phpmd App
+      run: tools/phpmd app ansi ./qa/rules/phpmd-app-ruleset.xml
+
+    - name: Phpmd Tests
+      run: tools/phpmd tests ansi ./qa/rules/phpmd-tests-ruleset.xml
 
   # Tests:    
   #   name: Tests
