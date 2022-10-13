@@ -5,7 +5,7 @@ on:
     branches-ignore: [ main, beta ]
 
 jobs:
-    BackEnd:
+  BackEnd:
     name: BackEnd
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +42,7 @@ jobs:
     - name: Phpmd Tests
       run: tools/phpmd tests ansi ./qa/rules/phpmd-tests-ruleset.xml
 
-Tests:    
+  Tests:    
     name: Tests
     runs-on: ubuntu-latest
     container:
@@ -80,7 +80,7 @@ Tests:
 
     - name: Permisos en carpetas
       run: chmod -R 777 storage bootstrap/cache
-  
+
     - name: Migraciones y Seeders
       run: php artisan migrate --seed --env=testing
 
