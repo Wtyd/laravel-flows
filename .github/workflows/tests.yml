@@ -9,24 +9,24 @@ on:
 #   extensions: :opcache #intl, pcov #fileinfo is needed for Windows
 
 jobs:
-  # FrontEnd:
-  #   name: FrontEnd
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
+  FrontEnd:
+    name: FrontEnd
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-  #   - name: Node 12
-  #     uses: actions/setup-node@v3
-  #     with:
-  #       node-version: 12
-  #       cache: 'yarn'
+    - name: Node 12
+      uses: actions/setup-node@v3
+      with:
+        node-version: 12
+        cache: 'yarn'
 
-  #   - name: Install dependencies
-  #     run: yarn install --check-files
+    - name: Install dependencies
+      run: yarn install --check-files
 
-  #   - name: Check Front-End
-  #     run: qa/frontEndValidation
+    - name: Check Front-End
+      run: qa/frontEndValidation
 
 
   BackEnd:
@@ -34,17 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@v3
       with:
         php-version: '8.1'
         tools: parallel-lint
         coverage: none
 
     - name: Cache de Phpstan
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           tools/tmp/resultCache.php
@@ -66,47 +66,47 @@ jobs:
     - name: Phpmd Tests
       run: tools/phpmd tests ansi ./qa/rules/phpmd-tests-ruleset.xml
 
-  # Tests:    
-  #   name: Tests
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
-  #     credentials:
-  #           username: gitlab-imagenes
-  #           password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
-  #     volumes:
-  #       - /tmp/composer:/home/zataca/.cache/composer/files
-  #   strategy:
-  #     fail-fast: false
-  #   services:
-  #     postgres:
-  #       image: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
-  #       credentials:
-  #           username: gitlab-imagenes
-  #           password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
-  #       env:
-  #         POSTGRES_DB: tests
-  #         POSTGRES_USER: zataca
-  #         POSTGRES_PASSWORD: zataca
-  #         POSTGRES_HOST_AUTH_METHOD: md5 
-  #       # Set health checks to wait until postgres has started
-  #       options:
-  #         --health-cmd pg_isready
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v3
+  Tests:    
+    name: Tests
+    runs-on: ubuntu-latest
+    container:
+      image: gitlab.zataca.es:5050/operaciones/contenedores/php81:1.0.0
+      credentials:
+            username: gitlab-imagenes
+            password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
+      volumes:
+        - /tmp/composer:/home/zataca/.cache/composer/files
+    strategy:
+      fail-fast: false
+    services:
+      postgres:
+        image: gitlab.zataca.es:5050/operaciones/contenedores/postgres12:0.0.2
+        credentials:
+            username: gitlab-imagenes
+            password: ${{ secrets.GITLAB_REGISTRO_DE_IMAGENES }}
+        env:
+          POSTGRES_DB: tests
+          POSTGRES_USER: zataca
+          POSTGRES_PASSWORD: zataca
+          POSTGRES_HOST_AUTH_METHOD: md5 
+        # Set health checks to wait until postgres has started
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-  #   - name: Composer Install
-  #     run: php composer.phar install --no-ansi --no-interaction --no-scripts
+    - name: Composer Install
+      run: php composer.phar install --no-ansi --no-interaction --no-scripts
 
-  #   - name: Permisos en carpetas
-  #     run: chmod -R 777 storage bootstrap/cache
+    - name: Permisos en carpetas
+      run: chmod -R 777 storage bootstrap/cache
   
-  #   - name: Migraciones y Seeders
-  #     run: php artisan migrate --seed --env=testing
+    - name: Migraciones y Seeders
+      run: php artisan migrate --seed --env=testing
 
-    # - name: Phpunit
-    #   run: vendor/bin/phpunit
+    - name: Phpunit
+      run: vendor/bin/phpunit
