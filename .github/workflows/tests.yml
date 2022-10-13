@@ -54,8 +54,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Execute GitHooks
-      run: php vendor/bin/githooks tool all --processes=4 # Ejecución rápida (8 segs sin cache, 6 segs con cache, 3 con paralelización)
+    - name: Execute GitHooks Full
+      run: php vendor/bin/githooks tool all full --processes=4 # Ejecución rápida (8 segs sin cache, 6 segs con cache, 3 con paralelización)
 
     - name: Composer Validator
       run: php composer.phar validate --strict

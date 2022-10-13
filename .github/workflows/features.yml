@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Execute GitHooks
+    - name: Execute GitHooks Fast
       run: php vendor/bin/githooks tool all fast
 
     - name: Composer Validator
